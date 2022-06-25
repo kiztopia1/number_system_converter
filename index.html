@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NumberSystem Convertor</title>
+</head>
+<body>
+    <div id="app">
+        <div>
+            <h1>Number System Convertor</h1>
+        </div>
+    
+        <div class="inputBox">
+            Decimal: <input v-model="input" type="text">
+            <button @click.prevent="process(input)">go</button>
+        </div>
+
+        <div>
+            <br>
+            Binary: {{binary}}
+            <br>
+            Octal decimal: {{octal}}
+            <br>
+            hexadecimal: {{hexadecimal}}
+        </div>
+    </div>
+   
+
+    <script src="./vue.global.js"></script>
+    <script>
+        const a = ''
+        const Convertor = {
+            data () {
+                return{
+                    input: 0,
+                    binary:0,
+                    octal:0,
+                    hexadecimal: 0
+                }
+            },
+  
+            methods :{
+                converter(base,input){
+                    let number = input
+                    let answerArray  = [];
+                    let loop = true;
+                     
+                    while(loop){
+                        let reminder = number % base;
+                        answerArray.push(reminder)
+                        let dividend = (number - reminder) / base; 
+                        number = dividend
+
+                        if(reminder == dividend){
+                            loop = false;
+                            answerArray.push(dividend)
+                        }
+                    }
+                    if(base == 16){
+                        answerArray = this.toHexadecimalNumberSystem(answerArray)
+                    }
+                    return answerArray.reverse().toString().replaceAll(',' ,  "");// converting the array to string and reversing it
+                },
+                toHexadecimalNumberSystem(array){
+                    let list =  []
+                     array.map( number => {
+                        if(number == 10){list.push('A')}
+                        if(number == 11){list.push('B')}
+                        if(number == 12){list.push('C')}
+                        if(number == 13){list.push('D')}
+                        if(number == 14){list.push('E')}
+                        if(number == 15){list.push('F')}
+                        if(number<10){
+                            list.push(number)
+                        }
+                    }
+                    )
+                    return list;
+                },
+                process(input) {
+                    // to decimal 
+                    this.binary = this.converter(2, input)
+                    // to octal decimal
+                    this.octal = this.converter(8, input)
+                    // to hexadecimal
+                    this.hexadecimal = this.converter(16, input)
+                }
+            }
+            
+        };
+        const app = Vue.createApp(Convertor);
+
+        
+        app.mount('#app')
+    </script>
+
+    <style>
+        #app{
+            font-family:'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            width: 400px;
+            margin: 20px auto;
+        }
+        @media screen and (max-width: 480px) {
+            #app{padding: 10px}
+        }
+    </style>
+</body>
+</html>
