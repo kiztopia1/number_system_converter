@@ -19,11 +19,34 @@
 
         <div>
             <br>
-            Binary: {{binary}}
+            Binary: {{binary.answer}}
             <br>
-            Octal decimal: {{octal}}
+            Octal decimal: {{octal.answer}}
             <br>
-            hexadecimal: {{hexadecimal}}
+            hexadecimal: {{hexadecimal.answer}}
+        </div>
+
+        <div class="graph">
+            <p>Decimal Number to Binary </p>
+            <div class="line" v-for=" block in binary.graph">
+                <span class="dividend">{{block[0]}}</span> / <span class="divider"> {{binary.base}}</span> = <span class="quotient">{{block[1]}}</span> remainder <span class="remainder">{{block[2]}}</span>
+            </div>
+        </div>
+        
+        <hr>
+        
+        <div class="graph">
+            <p>Decimal Number to Octal </p>
+            <div class="line" v-for=" block in octal.graph">
+                <span class="dividend">{{block[0]}}</span> / <span class="divider"> {{octal.base}}</span> = <span class="quotient">{{block[1]}}</span> remainder <span class="remainder">{{block[2]}}</span>
+            </div>
+        </div>
+        <hr>
+        <div class="graph">
+            <p>Decimal Number to hexadecimal </p>
+            <div class="line" v-for=" block in hexadecimal.graph">
+                <span class="dividend">{{block[0]}}</span> / <span class="divider"> {{hexadecimal.base}}</span> = <span class="quotient">{{block[1]}}</span> remainder <span class="remainder">{{block[2]}}</span>
+            </div>
         </div>
     </div>
    
@@ -34,34 +57,51 @@
         const Convertor = {
             data () {
                 return{
-                    input: 0,
-                    binary:0,
-                    octal:0,
-                    hexadecimal: 0
+                    input:  0,
+                    binary: {answer:0,base:2, data:[]},
+                    octal: {answer:0,base:8, data:[]},
+                    hexadecimal:  {answer:0,base:16, data:[]}
                 }
             },
   
             methods :{
                 converter(base,input){
-                    let number = input
+                    let dividend = Number(input)
                     let answerArray  = [];
                     let loop = true;
-                     
+                    let data ={answer: '', base: base, graph:[]}; // Structure of graph[[dividend, quotient, remainder]]
+                    let graphData = []
                     while(loop){
-                        let reminder = number % base;
-                        answerArray.push(reminder)
-                        let dividend = (number - reminder) / base; 
-                        number = dividend
-
-                        if(reminder == dividend){
-                            loop = false;
-                            answerArray.push(dividend)
+                        if(dividend ==0){// bug fix for the 0 values in-front of the answers
+                            break;
                         }
+                        graphData = [] // resting 
+                        let remainder = dividend % base;
+                        let quotient = (dividend - remainder) / base; 
+                        answerArray.push(remainder)
+                        
+
+                        // checking if we are at the last quotient
+                        if(remainder == quotient){
+                            loop = false;
+                            console.log(dividend)
+                            answerArray.push(quotient)
+                            graphData.push(dividend,quotient,quotient)
+                            data.graph.push(graphData)
+                            
+
+                        }else{
+                            graphData.push(dividend,quotient,remainder)
+                            data.graph.push(graphData)
+
+                        }
+                        dividend = quotient
                     }
                     if(base == 16){
                         answerArray = this.toHexadecimalNumberSystem(answerArray)
                     }
-                    return answerArray.reverse().toString().replaceAll(',' ,  "");// converting the array to string and reversing it
+                    data.answer = answerArray.reverse().toString().replaceAll(',' ,  "");
+                    return data ;// converting the array to string and reversing it
                 },
                 toHexadecimalNumberSystem(array){
                     let list =  []
@@ -101,6 +141,25 @@
             font-family:'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             width: 400px;
             margin: 20px auto;
+        }
+        .line{
+            margin-bottom: 5px;
+        }
+        .dividend{
+            width: 23px;
+            display: inline-block;
+        }
+        .quotient{
+            width: 23px;
+            display: inline-block;
+        }
+        .divisor{
+            width: 23px;
+            display: inline-block;
+        }
+        .remainder{
+            margin-left: 23px;
+            
         }
         @media screen and (max-width: 480px) {
             #app{padding: 10px}
